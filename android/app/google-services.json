@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "457186597740",
+    "firebase_url": "https://klicktake-29b82-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "klicktake-29b82",
+    "storage_bucket": "klicktake-29b82.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457186597740:android:dfd425fa63d37b4598f149",
+        "android_client_info": {
+          "package_name": "com.klicktake.delivery.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIErOB4QEFl1nXmq1M-GICfctDYWRh93U"
+        },
+        {
+          "current_key": "AIzaSyCr3arpsLC5D1i4WTl4RiKWT5btWXrS2N0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457186597740:android:66c41fad664d0e4a98f149",
+        "android_client_info": {
+          "package_name": "com.klicktake.user.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIErOB4QEFl1nXmq1M-GICfctDYWRh93U"
+        },
+        {
+          "current_key": "AIzaSyCr3arpsLC5D1i4WTl4RiKWT5btWXrS2N0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457186597740:android:0ecd703fb5f262f098f149",
+        "android_client_info": {
+          "package_name": "com.klicktake.vendor.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIErOB4QEFl1nXmq1M-GICfctDYWRh93U"
+        },
+        {
+          "current_key": "AIzaSyCr3arpsLC5D1i4WTl4RiKWT5btWXrS2N0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

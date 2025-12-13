@@ -1,20 +1,21 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:sixam_mart/common/widgets/card_design/store_card.dart';
 import 'package:sixam_mart/common/widgets/card_design/store_card_with_distance.dart';
+import 'package:sixam_mart/common/widgets/rating_bar.dart';
+import 'package:sixam_mart/common/widgets/title_widget.dart';
 import 'package:sixam_mart/features/store/controllers/store_controller.dart';
 import 'package:sixam_mart/features/store/domain/models/store_model.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/app_constants.dart';
 import 'package:sixam_mart/util/dimensions.dart';
-import 'package:sixam_mart/common/widgets/card_design/store_card.dart';
-import 'package:sixam_mart/common/widgets/rating_bar.dart';
-import 'package:sixam_mart/common/widgets/title_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
-import 'package:get/get.dart';
 
 class NewOnMartView extends StatelessWidget {
   final bool isPharmacy;
   final bool isShop;
   final bool isNewStore;
+
   const NewOnMartView({
     super.key,
     required this.isPharmacy,
@@ -37,9 +38,6 @@ class NewOnMartView extends StatelessWidget {
 
       final bool bigCard = (isPharmacy || isShop);
       final double listHeight = bigCard ? 215 : 140;
-
-      // تقدير عرض العنصر لتحسين layout (مش لازم يكون دقيق 100%)
-      final double itemExtent = bigCard ? 230 : 210;
 
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
@@ -94,7 +92,6 @@ class _NewOnMartShimmerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Shimmer خفيف يشبه عرض المتاجر
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
       child: Column(

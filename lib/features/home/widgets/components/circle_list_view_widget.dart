@@ -18,31 +18,16 @@ class CircleListView extends StatefulWidget {
 }
 
 class _CircleListViewState extends State<CircleListView> {
-  // ✅ نحتفظ بالـ controllers بدل إنشائها كل rebuild
-  late final PageController _pageController;
-
   Gallery3DController? _galleryController;
   int _lastCount = 0;
 
   // نحتفظ بالقائمة المحضّرة
   List<Item> _preparedList = const [];
 
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
   List<Item> _prepareList(List<Item> original) {
     if (original.isEmpty) return const [];
 
-    // نفس منطقك: لو 1 أو 2 نخليهم 3 عناصر عشان شكل السلايدر
+    // لو 1 أو 2 نخليهم 3 عناصر عشان شكل السلايدر
     if (original.length == 1) {
       return [original[0], original[0], original[0]];
     }
@@ -73,7 +58,6 @@ class _CircleListViewState extends State<CircleListView> {
         return const SizedBox.shrink();
       }
 
-      // ✅ لا نعيد الحساب/التخزين إلا لو تغيرت فعلاً
       _preparedList = prepared;
       _ensureGalleryController(_preparedList.length);
 
@@ -81,53 +65,47 @@ class _CircleListViewState extends State<CircleListView> {
         height: 200,
         width: MediaQuery.of(context).size.width,
         child: RepaintBoundary(
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: 1, // ✅ ما نحتاج PageView متعدد هنا، Gallery3D هو اللي يمرر
-            itemBuilder: (context, _) {
-              return SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Gallery3D(
-                  controller: _galleryController!,
-                  width: MediaQuery.of(context).size.width,
-                  height: 200,
-                  isClip: true,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Gallery3D(
+              controller: _galleryController!,
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              isClip: true,
 
-                  // ✅ لا تعمل setState هنا لأنه ما في UI يعتمد على currentIndex
-                  onItemChanged: (index) {},
+              // ما نحتاج setState هنا لأنه ما في UI يعتمد على currentIndex
+              onItemChanged: (index) {},
 
-                  itemConfig: const GalleryItemConfig(
-                    width: 220,
-                    height: 200,
-                    radius: 10,
-                    isShowTransformMask: false,
+              itemConfig: const GalleryItemConfig(
+                width: 220,
+                height: 200,
+                radius: 10,
+                isShowTransformMask: false,
+              ),
+              onClickItem: (index) {
+                if (kDebugMode) {
+                  // ignore: avoid_print
+                  print("currentIndex:$index");
+                }
+              },
+              itemBuilder: (context, index) {
+                final item = _preparedList[index];
+
+                return InkWell(
+                  onTap: () => Get.find<ItemController>()
+                      .navigateToItemPage(item, context, isCampaign: true),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                    child: CustomImage(
+                      image: '${item.imageFullUrl}',
+                      fit: BoxFit.cover,
+                      height: 200,
+                      width: 220,
+                    ),
                   ),
-                  onClickItem: (index) {
-                    if (kDebugMode) {
-                      // ignore: avoid_print
-                      print("currentIndex:$index");
-                    }
-                  },
-                  itemBuilder: (context, index) {
-                    final item = _preparedList[index];
-
-                    return InkWell(
-                      onTap: () => Get.find<ItemController>()
-                          .navigateToItemPage(item, context, isCampaign: true),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                        child: CustomImage(
-                          image: '${item.imageFullUrl}',
-                          fit: BoxFit.cover,
-                          height: 200,
-                          width: 220,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       );
@@ -145,7 +123,8 @@ class CircleListViewShimmerView extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+            padding:
+            const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
             child: TitleWidget(
               title: 'just_for_you'.tr,
             ),
@@ -169,7 +148,8 @@ class CircleListViewShimmerView extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     return ClipRRect(
-                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                      borderRadius:
+                      BorderRadius.circular(Dimensions.radiusDefault),
                       child: Shimmer(
                         duration: const Duration(seconds: 2),
                         enabled: true,

@@ -140,7 +140,7 @@ class HomeScreen extends StatefulWidget {
         Get.find<StoreController>().getPopularStoreList(reload, 'all', false);
         Get.find<StoreController>().getLatestStoreList(reload, 'all', false);
         Get.find<StoreController>().getTopOfferStoreList(reload, false);
-        Get.find<ItemController>().getRecommendedItemList(reload, 'all', false);
+// Get.find<ItemController>().getRecommendedItemList(reload, 'all', false);
         Get.find<StoreController>().getStoreList(1, reload);
         Get.find<AdvertisementController>().getAdvertisementList();
 

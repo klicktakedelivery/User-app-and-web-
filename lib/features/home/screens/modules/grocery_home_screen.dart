@@ -67,13 +67,7 @@ class GroceryHomeScreen extends StatelessWidget {
 class _LazySection extends StatefulWidget {
   final Widget child;
 
-  /// مقدار الاقتراب قبل البناء (بالبيكسل)
-  final double preloadOffset;
-
-  const _LazySection({
-    required this.child,
-    this.preloadOffset = 600, // يبني قبل ما يظهر بشوي حتى ما تحس بقفزة
-  });
+  const _LazySection({required this.child});
 
   @override
   State<_LazySection> createState() => _LazySectionState();
@@ -87,7 +81,6 @@ class _LazySectionState extends State<_LazySection> {
     if (_built) return widget.child;
 
     return VisibilityDetectorLite(
-      preloadOffset: widget.preloadOffset,
       onVisible: () {
         if (mounted) {
           setState(() => _built = true);
@@ -103,13 +96,11 @@ class _LazySectionState extends State<_LazySection> {
 class VisibilityDetectorLite extends StatefulWidget {
   final VoidCallback onVisible;
   final Widget placeholder;
-  final double preloadOffset;
 
   const VisibilityDetectorLite({
     super.key,
     required this.onVisible,
     required this.placeholder,
-    required this.preloadOffset,
   });
 
   @override
@@ -119,9 +110,11 @@ class VisibilityDetectorLite extends StatefulWidget {
 class _VisibilityDetectorLiteState extends State<VisibilityDetectorLite> {
   bool _fired = false;
 
+  // ثابت: يبني قبل ما يظهر بشوي حتى ما تحس بقفزة
+  static const double _preloadOffset = 600;
+
   @override
   Widget build(BuildContext context) {
-    // LayoutBuilder يعطينا مكان الودجت بالنسبة للشاشة بشكل غير مباشر
     return LayoutBuilder(
       builder: (context, constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -136,9 +129,8 @@ class _VisibilityDetectorLiteState extends State<VisibilityDetectorLite> {
           final widgetTop = offset.dy;
           final widgetBottom = widgetTop + renderBox.size.height;
 
-          // إذا اقترب من الشاشة (ضمن هامش preloadOffset) اعتبره “مرئي”
-          final isNearViewport = widgetTop < screenHeight + widget.preloadOffset &&
-              widgetBottom > -widget.preloadOffset;
+          final isNearViewport = widgetTop < screenHeight + _preloadOffset &&
+              widgetBottom > -_preloadOffset;
 
           if (isNearViewport) {
             _fired = true;

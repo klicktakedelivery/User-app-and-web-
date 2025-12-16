@@ -519,144 +519,143 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> with WidgetsBi
   }
 
   void updateMarker(
-      Store? store,
-      DeliveryMan? deliveryMan,
-      AddressModel? addressModel,
-      bool takeAway,
-      bool parcel,
-      bool isRestaurant, {
-        AddressModel? currentAddress,
-        bool fromCurrentLocation = false,
-      }) async {
-    try {
-      BitmapDescriptor restaurantImageData = await MarkerHelper.convertAssetToBitmapDescriptor(
-        width: 30,
-        imagePath: parcel ? Images.userMarker : (isRestaurant ? Images.restaurantMarker : Images.markerStore),
-      );
+  Store? store,
+  DeliveryMan? deliveryMan,
+  AddressModel? addressModel,
+  bool takeAway,
+  bool parcel,
+  bool isRestaurant, {
+  AddressModel? currentAddress,
+  bool fromCurrentLocation = false,
+}) async {
+  try {
+    final BitmapDescriptor restaurantImageData =
+        await MarkerHelper.convertAssetToBitmapDescriptor(
+      width: 30,
+      imagePath: parcel
+          ? Images.userMarker
+          : (isRestaurant ? Images.restaurantMarker : Images.markerStore),
+    );
 
-      BitmapDescriptor deliveryBoyImageData = await MarkerHelper.convertAssetToBitmapDescriptor(
-        width: 30,
-        imagePath: Images.deliveryManMarker,
-      );
+    final BitmapDescriptor deliveryBoyImageData =
+        await MarkerHelper.convertAssetToBitmapDescriptor(
+      width: 30,
+      imagePath: Images.deliveryManMarker,
+    );
 
-      BitmapDescriptor destinationImageData = await MarkerHelper.convertAssetToBitmapDescriptor(
-        width: 30,
-        imagePath: Images.userMarker,
-      );
+    final BitmapDescriptor destinationImageData =
+        await MarkerHelper.convertAssetToBitmapDescriptor(
+      width: 30,
+      imagePath: Images.userMarker,
+    );
 
-      LatLng? storeLatLng;
-      LatLng? destLatLng;
+    LatLng? storeLatLng;
+    LatLng? destLatLng;
 
-      if (store?.latitude != null && store?.longitude != null) {
-        final sLat = double.tryParse(store!.latitude!);
-        final sLng = double.tryParse(store.longitude!);
-        if (sLat != null && sLng != null) {
-          storeLatLng = LatLng(sLat, sLng);
-        }
+    if (store?.latitude != null && store?.longitude != null) {
+      final sLat = double.tryParse(store!.latitude!);
+      final sLng = double.tryParse(store.longitude!);
+      if (sLat != null && sLng != null) {
+        storeLatLng = LatLng(sLat, sLng);
       }
+    }
 
-      if (addressModel?.latitude != null && addressModel?.longitude != null) {
-        final dLat = double.tryParse(addressModel!.latitude!);
-        final dLng = double.tryParse(addressModel.longitude!);
-        if (dLat != null && dLng != null) {
-          destLatLng = LatLng(dLat, dLng);
-        }
+    if (addressModel?.latitude != null && addressModel?.longitude != null) {
+      final dLat = double.tryParse(addressModel!.latitude!);
+      final dLng = double.tryParse(addressModel.longitude!);
+      if (dLat != null && dLng != null) {
+        destLatLng = LatLng(dLat, dLng);
       }
+    }
 
-      LatLngBounds? bounds;
-      double rotation = 0;
+    // ✅ ما في bounds هنا (لأننا ما نستخدمه)
+    double rotation = 0;
+    if (_controller != null && storeLatLng != null && destLatLng != null) {
+      rotation = destLatLng.latitude < storeLatLng.latitude ? 0 : 180;
+    }
 
-      if (_controller != null && storeLatLng != null && destLatLng != null) {
-        if (destLatLng.latitude < storeLatLng.latitude) {
-          bounds = LatLngBounds(
-            southwest: destLatLng,
-            northeast: storeLatLng,
-          );
-          rotation = 0;
-        } else {
-          bounds = LatLngBounds(
-            southwest: storeLatLng,
-            northeast: destLatLng,
-          );
-          rotation = 180;
-        }
-      }
+    _markers = HashSet<Marker>();
 
-      _markers = HashSet<Marker>();
-
-      if (currentAddress != null) {
-        final cLat = double.tryParse(currentAddress.latitude ?? '');
-        final cLng = double.tryParse(currentAddress.longitude ?? '');
-        if (cLat != null && cLng != null) {
-          _markers.add(
-            Marker(
-              markerId: const MarkerId('current_location'),
-              visible: true,
-              draggable: false,
-              zIndexInt: 2,
-              flat: true,
-              anchor: const Offset(0.5, 0.5),
-              position: LatLng(cLat, cLng),
-              icon: destinationImageData,
-            ),
-          );
-          setState(() {});
-        }
-      }
-
-      if (currentAddress == null && destLatLng != null && addressModel != null) {
+    if (currentAddress != null) {
+      final cLat = double.tryParse(currentAddress.latitude ?? '');
+      final cLng = double.tryParse(currentAddress.longitude ?? '');
+      if (cLat != null && cLng != null) {
         _markers.add(
           Marker(
-            markerId: const MarkerId('destination'),
-            position: destLatLng,
-            infoWindow: InfoWindow(
-              title: parcel ? 'sender'.tr : 'Destination'.tr,
-              snippet: addressModel.address,
-            ),
+            markerId: const MarkerId('current_location'),
+            visible: true,
+            draggable: false,
+            zIndexInt: 2,
+            flat: true,
+            anchor: const Offset(0.5, 0.5),
+            position: LatLng(cLat, cLng),
             icon: destinationImageData,
           ),
         );
       }
+    }
 
-      if (storeLatLng != null && store != null) {
+    if (currentAddress == null && destLatLng != null && addressModel != null) {
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('destination'),
+          position: destLatLng,
+          infoWindow: InfoWindow(
+            title: parcel ? 'sender'.tr : 'Destination'.tr,
+            snippet: addressModel.address,
+          ),
+          icon: destinationImageData,
+        ),
+      );
+    }
+
+    if (storeLatLng != null && store != null) {
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('store'),
+          position: storeLatLng,
+          infoWindow: InfoWindow(
+            title: parcel
+                ? 'receiver'.tr
+                : (Get.find<SplashController>()
+                            .configModel!
+                            .moduleConfig!
+                            .module!
+                            .showRestaurantText!
+                        ? 'store'.tr
+                        : 'store'.tr),
+            snippet: store.address,
+          ),
+          icon: restaurantImageData,
+        ),
+      );
+    }
+
+    if (deliveryMan != null) {
+      final dLat = double.tryParse(deliveryMan.lat ?? '');
+      final dLng = double.tryParse(deliveryMan.lng ?? '');
+      if (dLat != null && dLng != null) {
         _markers.add(
           Marker(
-            markerId: const MarkerId('store'),
-            position: storeLatLng,
+            markerId: const MarkerId('delivery_boy'),
+            position: LatLng(dLat, dLng),
             infoWindow: InfoWindow(
-              title: parcel
-                  ? 'receiver'.tr
-                  : Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-                  ? 'store'.tr
-                  : 'store'.tr,
-              snippet: store.address,
+              title: 'delivery_man'.tr,
+              snippet: deliveryMan.location,
             ),
-            icon: restaurantImageData,
+            rotation: rotation,
+            icon: deliveryBoyImageData,
           ),
         );
       }
+    }
+  } catch (_) {}
 
-      if (deliveryMan != null) {
-        final dLat = double.tryParse(deliveryMan.lat ?? '');
-        final dLng = double.tryParse(deliveryMan.lng ?? '');
-        if (dLat != null && dLng != null) {
-          _markers.add(
-            Marker(
-              markerId: const MarkerId('delivery_boy'),
-              position: LatLng(dLat, dLng),
-              infoWindow: InfoWindow(
-                title: 'delivery_man'.tr,
-                snippet: deliveryMan.location,
-              ),
-              rotation: rotation,
-              icon: deliveryBoyImageData,
-            ),
-          );
-        }
-      }
-    } catch (_) {}
+  if (mounted) {
     setState(() {});
   }
+}
+
 
   Future<void> zoomToFit(
       GoogleMapController? controller,

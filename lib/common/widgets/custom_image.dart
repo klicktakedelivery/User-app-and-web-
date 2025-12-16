@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +31,6 @@ class CustomImage extends StatelessWidget {
   String _resolveUrl() {
     if (image.isEmpty) return image;
 
-    // Web proxy يحتاج encoding للـ url
     if (kIsWeb) {
       final encoded = Uri.encodeComponent(image);
       return '${AppConstants.baseUrl}/image-proxy?url=$encoded';
@@ -37,18 +38,24 @@ class CustomImage extends StatelessWidget {
     return image;
   }
 
+  int? _safeMemSize(double? v, double dpr) {
+    if (v == null) return null;
+    if (!v.isFinite || v.isNaN) return null;
+    if (v <= 0) return null;
+
+    final px = (v * dpr).round();
+    if (px <= 0) return null;
+
+    // سقف منطقي لتجنب قيم ضخمة تكسر الذاكرة
+    return math.min(px, 4096);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // decode حجم مناسب لتقليل استهلاك الذاكرة
-    int? memWidth;
-    int? memHeight;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
 
-    if (width != null) {
-      memWidth = (width! * 2).round();
-    }
-    if (height != null) {
-      memHeight = (height! * 2).round();
-    }
+    final int? memWidth = _safeMemSize(width, dpr);
+    final int? memHeight = _safeMemSize(height, dpr);
 
     final resolvedUrl = _resolveUrl();
 
@@ -59,14 +66,10 @@ class CustomImage extends StatelessWidget {
       width: width,
       fit: fit,
 
-      // أداء + ذاكرة
       memCacheWidth: memWidth,
       memCacheHeight: memHeight,
 
-      // يقلل الوميض وإعادة الرسم عند تبدّل الرابط
       useOldImageOnUrlChange: true,
-
-      // انتقالات خفيفة (تحسن الإحساس وتقلل spikes)
       fadeInDuration: const Duration(milliseconds: 120),
       fadeOutDuration: const Duration(milliseconds: 120),
 
@@ -102,7 +105,6 @@ class CustomImage extends StatelessWidget {
       ),
     );
 
-    // ✅ مهم للأداء: لا تشغّل AnimatedScale إلا لو فعلاً في Hover (عادة على الويب/الديسكتوب)
     if (!isHovered) return img;
 
     return AnimatedScale(
@@ -111,5 +113,22 @@ class CustomImage extends StatelessWidget {
       curve: Curves.easeInOut,
       child: img,
     );
+  }
+}
+
+/// ✅ بوابة واحدة لأي مكان يحتاج ImageProvider (DecorationImage / CircleAvatar / إلخ)
+class CustomImageProvider {
+  static String resolveUrl(String url) {
+    if (url.isEmpty) return url;
+
+    if (kIsWeb) {
+      final encoded = Uri.encodeComponent(url);
+      return '${AppConstants.baseUrl}/image-proxy?url=$encoded';
+    }
+    return url;
+  }
+
+  static ImageProvider provider(String url) {
+    return CachedNetworkImageProvider(resolveUrl(url));
   }
 }

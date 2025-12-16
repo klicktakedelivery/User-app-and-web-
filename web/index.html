@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Klicktake: Your multi-vendor food, grocery, and delivery app.">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Klicktake">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <meta name="google-signin-client_id" content="491987943015-agln6biv84krpnngdphj87jkko7r9lb8.apps.googleusercontent.com">
+
+  <title>Klicktake</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script type="application/javascript" src="/assets/packages/flutter_inappwebview_web/assets/web/web_support.js" defer></script>
+
+  <script>
+    // Temporary placeholder for local dev - Flutter replaces it on build.
+    var serviceWorkerVersion = 'dev-version';
+  </script>
+
+  <script src="flutter.js?version=3.1.0" defer></script>
+</head>
+
+<body>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_MAP_KEY"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
+  <div class="preloader">
+    <div class="preloader-container">
+      <img width="50" class="preloader-img" src="favicon.png" alt="">
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="header-container d-flex align-items-center justify-content-between">
+      <div class="header-start d-flex gap-5 align-items-center">
+        <img class="logo" src="logo.png" alt="">
+        <div class="placeholder placeholder-wide"></div>
+        <div class="placeholder"></div>
+        <div class="placeholder"></div>
+        <div class="placeholder"></div>
+      </div>
+      <div class="header-end d-flex gap-5">
+        <div class="placeholder"></div>
+        <div class="placeholder"></div>
+        <div class="placeholder"></div>
+      </div>
+    </div>
+  </header>
+
+  <script>
+    // Apply theme based on localStorage
+    if (typeof(Storage) !== "undefined") {
+      var itemValue = localStorage.getItem("flutter.6ammart_theme");
+      if (itemValue !== null) {
+        if (itemValue === "true") {
+          document.body.classList.add("theme-dark");
+        } else {
+          document.body.classList.remove("theme-light");
+        }
+      }
+    }
+  </script>
+
+  <script>
+    document.querySelectorAll("img.svg").forEach(function (img) {
+      var imgID = img.getAttribute("id");
+      var imgClass = img.getAttribute("class");
+      var imgURL = img.getAttribute("src");
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", imgURL, true);
+      xhr.responseType = "document";
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          var data = xhr.response;
+          var svg = data.querySelector("svg");
+          if (imgID) svg.setAttribute("id", imgID);
+          if (imgClass) svg.setAttribute("class", imgClass + " replaced-svg");
+          svg.removeAttribute("xmlns:a");
+          if (!svg.getAttribute("viewBox") && svg.getAttribute("height") && svg.getAttribute("width")) {
+            svg.setAttribute("viewBox", "0 0 " + svg.getAttribute("height") + " " + svg.getAttribute("width"));
+          }
+          img.parentNode.replaceChild(svg, img);
+        }
+      };
+      xhr.send();
+    });
+  </script>
+
+  <script>
+    // Temporary placeholder for Flutter bootstrap - replace with {{flutter_js}} in production.
+    window.addEventListener('load', function(ev) {
+      console.log('Flutter bootstrap would run here.');
+    });
+  </script>
+
+  <script>
+    function removePreloader() {
+      const preloader = document.querySelector('.preloader');
+      if (preloader) {
+        preloader.remove();
+      }
+    }
+  </script>
+
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAVGuI_f9EFavvm3t8fHe_TLW6Riy_UmBw",
+      authDomain: "klicktake-29b82.firebaseapp.com",
+      databaseURL: "https://klicktake-29b82-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "klicktake-29b82",
+      storageBucket: "klicktake-29b82.firebasestorage.app",
+      messagingSenderId: "457186597740",
+      appId: "1:457186597740:web:f33a8e82867038d198f149",
+      measurementId: "G-DRC7RQE3HY"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+</body>
+</html>

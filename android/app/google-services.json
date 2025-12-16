@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "457186597740",
+    "firebase_url": "https://klicktake-29b82-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "klicktake-29b82",
+    "storage_bucket": "klicktake-29b82.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457186597740:android:3268bcc9799d905498f149",
+        "android_client_info": {
+          "package_name": "com.klicktake.Store"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr3arpsLC5D1i4WTl4RiKWT5btWXrS2N0"
+        },
+        {
+          "current_key": "AIzaSyAygGlcdI9HBmhNEjq-s6Eb0Pgitsrw48M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457186597740:android:1679f53e3f6ea87698f149",
+        "android_client_info": {
+          "package_name": "com.klicktake.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr3arpsLC5D1i4WTl4RiKWT5btWXrS2N0"
+        },
+        {
+          "current_key": "AIzaSyAygGlcdI9HBmhNEjq-s6Eb0Pgitsrw48M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457186597740:android:7129d57f26b7c5ff98f149",
+        "android_client_info": {
+          "package_name": "com.klicktake.delivery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr3arpsLC5D1i4WTl4RiKWT5btWXrS2N0"
+        },
+        {
+          "current_key": "AIzaSyAygGlcdI9HBmhNEjq-s6Eb0Pgitsrw48M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

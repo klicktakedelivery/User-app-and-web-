@@ -83,25 +83,33 @@ class CartRepository implements CartRepositoryInterface<OnlineCart> {
     return await _getCartDataOnline();
   }
 
-  Future<List<OnlineCartModel>?> _getCartDataOnline() async {
-    List<OnlineCartModel>? onlineCartList;
-    Map<String, String>? header ={
-      'Content-Type': 'application/json; charset=UTF-8',
-      AppConstants.localizationKey: AppConstants.languages[0].languageCode!,
-      AppConstants.moduleId: '${ModuleHelper.getCacheModule()?.id}',
-      'Authorization': 'Bearer ${sharedPreferences.getString(AppConstants.token)}'
-    };
+ Future<List<OnlineCartModel>?> _getCartDataOnline() async {
+  List<OnlineCartModel>? onlineCartList;
 
-    Response response = await apiClient.getData(
-      '${AppConstants.getCartListUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}',
-      headers: ModuleHelper.getModule()?.id == null ? header : null,
-    );
-    if(response.statusCode == 200) {
-      onlineCartList = [];
-      response.body.forEach((cart) => onlineCartList!.add(OnlineCartModel.fromJson(cart)));
-    }
-    return onlineCartList;
+  final String? token = sharedPreferences.getString(AppConstants.token);
+
+  final Map<String, String> header = {
+    'Content-Type': 'application/json; charset=UTF-8',
+    AppConstants.localizationKey: AppConstants.languages[0].languageCode!,
+    AppConstants.moduleId: '${ModuleHelper.getCacheModule()?.id}',
+
+    // لا ترسل Authorization إذا التوكن فاضي/NULL أو المستخدم غير مسجل
+    if (AuthHelper.isLoggedIn() && token != null && token.trim().isNotEmpty)
+      'Authorization': 'Bearer ${token.trim()}',
+  };
+
+  Response response = await apiClient.getData(
+    '${AppConstants.getCartListUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}',
+    headers: ModuleHelper.getModule()?.id == null ? header : null,
+  );
+
+  if (response.statusCode == 200) {
+    onlineCartList = [];
+    response.body.forEach((cart) => onlineCartList!.add(OnlineCartModel.fromJson(cart)));
   }
+  return onlineCartList;
+}
+
 
   @override
   Future update(Map<String, dynamic> body, int? id, {double? price, int? quantity, bool isUpdateQty = false}) async {

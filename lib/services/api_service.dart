@@ -145,13 +145,22 @@ class ApiService {
   }
 
   Future<void> _applyCurrencyIfFound(dynamic zoneResponse) async {
+    // ✅ إذا المستخدم عامل Manual Override: لا تسمح للـ Zone تغيّر العملة
+    final sp = _spOrNull();
+    final bool isAuto = sp?.getBool(AppConstants.currencyAuto) ?? true;
+    if (!isAuto) {
+      if (kDebugMode) {
+        print('💱 Currency override active: skip zone currency update');
+      }
+      return;
+    }
+
     final code = _extractCurrencyCodeFromZoneResponse(zoneResponse);
     if (code == null || code.trim().isEmpty) return;
 
     final normalized = code.trim().toUpperCase();
 
     try {
-      final sp = _spOrNull();
       if (sp != null) {
         await sp.setString(AppConstants.currencyCode, normalized);
       }
@@ -165,7 +174,7 @@ class ApiService {
     } catch (_) {}
 
     if (kDebugMode) {
-      print('💱 Currency updated from Zone: $normalized');
+      print('💱 Currency updated from Zone (AUTO): $normalized');
     }
   }
 

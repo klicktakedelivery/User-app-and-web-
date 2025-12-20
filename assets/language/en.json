@@ -1520,5 +1520,13 @@
   "sort_by_z_to_a" : "Sort by: Z to A",
   "only_halal" : "Only Halal",
   "only_veg" : "Only Veg",
-  "only_non_veg" : "Only Non-veg"
+  "only_non_veg" : "Only Non-veg",
+  "currency": "Currency",
+  "auto_currency_by_location": "Auto currency by location",
+  "auto_mode_enabled": "Auto mode",
+  "manual_mode_enabled": "Manual mode",
+  "auto_currency_applied": "Auto currency applied",
+  "currency_changed": "Currency changed"
+  
+  
 }

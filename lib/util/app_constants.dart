@@ -241,9 +241,11 @@ class AppConstants {
   static const String latitude = 'latitude';
   static const String longitude = 'longitude';
 
-  // ✅ Currency (Zone-based via storage + header)
-  static const String currencyCode = 'currency_code'; // SharedPref key
+  // ✅ Currency (Zone-based + Manual Override)
+  static const String currencyCode = 'currency_code'; // applied currency
   static const String currencyHeaderKey = 'X-Currency-Code'; // API header key
+  static const String currencyAuto = 'currency_auto'; // bool: true => follow zone
+  static const String currencyOverrideCode = 'currency_override_code'; // manual chosen currency
 
   static const String cookiesManagement = 'cookies_management';
 

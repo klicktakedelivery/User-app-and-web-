@@ -272,7 +272,8 @@ class ApiService {
     bool featured = false,
   }) async {
     final currency = _currencyForCacheKey();
-    final key = "stores_${moduleId}_${zoneId}_$featured\_$currency";
+    final key = "stores_${moduleId}_${zoneId}_${featured}_$currency";
+
 
     final headers = _buildHeaders(
       moduleId: moduleId,
@@ -299,7 +300,8 @@ class ApiService {
     required List<int> zoneId,
   }) async {
     final currency = _currencyForCacheKey();
-    final key = "categories_$moduleId_${zoneId.join(",")}_$currency";
+    final key = "categories_${moduleId}_${zoneId.join(',')}_$currency";
+
 
     final headers = _buildHeaders(
       moduleId: moduleId,

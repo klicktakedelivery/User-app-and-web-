@@ -42,7 +42,8 @@ class ZoneController extends GetxController {
       final data = await ApiService().getZoneId(lat, lng);
 
       if (data != null && data is Map) {
-        final map = Map<String, dynamic>.from(data as Map);
+        final map = Map<String, dynamic>.from(data);
+
 
         final z = ZoneData.fromJson(map);
         _zoneData.value = z;

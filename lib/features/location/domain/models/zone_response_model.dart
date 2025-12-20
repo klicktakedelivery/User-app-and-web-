@@ -5,7 +5,15 @@ class ZoneResponseModel {
   final List<ZoneData> _zoneData;
   final List<int> _areaIds;
   final int? statusCode;
-  ZoneResponseModel(this._isSuccess, this._message, this._zoneIds, this._zoneData, this._areaIds, this.statusCode);
+
+  ZoneResponseModel(
+    this._isSuccess,
+    this._message,
+    this._zoneIds,
+    this._zoneData,
+    this._areaIds,
+    this.statusCode,
+  );
 
   String? get message => _message;
   List<int> get zoneIds => _zoneIds;
@@ -26,6 +34,9 @@ class ZoneData {
   String? increaseDeliveryFeeMessage;
   List<Modules>? modules;
 
+  // ✅ NEW
+  String? currencyCode;
+
   ZoneData({
     this.id,
     this.status,
@@ -36,6 +47,7 @@ class ZoneData {
     this.increaseDeliveryFeeStatus,
     this.increaseDeliveryFeeMessage,
     this.modules,
+    this.currencyCode,
   });
 
   ZoneData.fromJson(Map<String, dynamic> json) {
@@ -47,6 +59,10 @@ class ZoneData {
     increaseDeliveryFee = json['increased_delivery_fee']?.toDouble();
     increaseDeliveryFeeStatus = json['increased_delivery_fee_status'];
     increaseDeliveryFeeMessage = json['increase_delivery_charge_message'];
+
+    // ✅ NEW (snake_case from backend) + fallback
+    currencyCode = (json['currency_code'] ?? json['currencyCode'])?.toString();
+
     if (json['modules'] != null) {
       modules = <Modules>[];
       json['modules'].forEach((v) {
@@ -65,6 +81,10 @@ class ZoneData {
     data['increased_delivery_fee'] = increaseDeliveryFee;
     data['increased_delivery_fee_status'] = increaseDeliveryFeeStatus;
     data['increase_delivery_charge_message'] = increaseDeliveryFeeMessage;
+
+    // ✅ NEW
+    data['currency_code'] = currencyCode;
+
     if (modules != null) {
       data['modules'] = modules!.map((v) => v.toJson()).toList();
     }
@@ -162,7 +182,8 @@ class Pivot {
     moduleId = json['module_id'];
     perKmShippingCharge = json['per_km_shipping_charge']?.toDouble();
     minimumShippingCharge = json['minimum_shipping_charge']?.toDouble();
-    maximumShippingCharge =  /*(json['maximum_shipping_charge'] != null && json['maximum_shipping_charge'] == 0) ? null : */json['maximum_shipping_charge']?.toDouble();
+    maximumShippingCharge = /*(json['maximum_shipping_charge'] != null && json['maximum_shipping_charge'] == 0) ? null : */
+        json['maximum_shipping_charge']?.toDouble();
     maximumCodOrderAmount = json['maximum_cod_order_amount']?.toDouble();
   }
 

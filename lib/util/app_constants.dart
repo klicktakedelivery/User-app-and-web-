@@ -240,8 +240,12 @@ class AppConstants {
   static const String localizationKey = 'X-localization';
   static const String latitude = 'latitude';
   static const String longitude = 'longitude';
-  static const String cookiesManagement = 'cookies_management';
 
+  // ✅ Currency (Zone-based via storage + header)
+  static const String currencyCode = 'currency_code'; // SharedPref key
+  static const String currencyHeaderKey = 'X-Currency-Code'; // API header key
+
+  static const String cookiesManagement = 'cookies_management';
 
   ///Refer & Earn work flow list..
   static final dataList = [
@@ -251,7 +255,7 @@ class AppConstants {
   ];
 
   /// Delivery Tips
-  static List<String> tips = ['0' ,'15', '10', '20', '40', 'custom'];
+  static List<String> tips = ['0', '15', '10', '20', '40', 'custom'];
   static List<String> deliveryInstructionList = [
     'deliver_to_front_door',
     'deliver_the_reception_desk',
@@ -291,37 +295,18 @@ class AppConstants {
   static List<String> joinDropdown = [
     'join_us',
     'become_a_seller',
-    'become_a_delivery_man'
+    'become_a_delivery_man',
   ];
 
   static final List<Map<String, String>> walletTransactionSortingList = [
-    {
-      'title' : 'all_transactions',
-      'value' : 'all'
-    },
-    {
-      'title' : 'order_transactions',
-      'value' : 'order'
-    },
-    {
-      'title' : 'converted_from_loyalty_point',
-      'value' : 'loyalty_point'
-    },
-    {
-      'title' : 'added_via_payment_method',
-      'value' : 'add_fund'
-    },
-    {
-      'title' : 'earned_by_referral',
-      'value' : 'referrer'
-    },
-    {
-      'title' : 'cash_back_transactions',
-      'value' : 'CashBack'
-    },
+    {'title': 'all_transactions', 'value': 'all'},
+    {'title': 'order_transactions', 'value': 'order'},
+    {'title': 'converted_from_loyalty_point', 'value': 'loyalty_point'},
+    {'title': 'added_via_payment_method', 'value': 'add_fund'},
+    {'title': 'earned_by_referral', 'value': 'referrer'},
+    {'title': 'cash_back_transactions', 'value': 'CashBack'},
   ];
 
   //taxi seats..
   static List<String> seats = ['1-4', '5-8', '9-13', '14+'];
-
 }

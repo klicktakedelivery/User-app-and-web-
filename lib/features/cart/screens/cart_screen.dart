@@ -65,7 +65,7 @@ class _CartScreenState extends State<CartScreen> {
     }
     if(Get.find<CartController>().cartList.isNotEmpty){
       if (kDebugMode) {
-        print('----cart item : ${Get.find<CartController>().cartList[0].toJson()}');
+        debugPrint('----cart item : ${Get.find<CartController>().cartList[0].toJson()}');
       }
 
       if(Get.find<CartController>().addCutlery){
@@ -231,7 +231,7 @@ class _CartScreenState extends State<CartScreen> {
 
                 onIsExtendedCallback: () {
                   ///Don't remove this print.
-                  print('======= expandableContent open');
+                  debugPrint('======= expandableContent open');
                   _getExpandedBottomSheetHeight();
                   // setState(() {
                   //   _height = 100;
@@ -239,7 +239,7 @@ class _CartScreenState extends State<CartScreen> {
                 },
                 onIsContractedCallback: () {
                   ///Don't remove this print.
-                  print('======= expandableContent close');
+                  debugPrint('======= expandableContent close');
                   setState(() {
                     _height = 0;
                   });

@@ -3,6 +3,8 @@
 // ===============================================
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
+
 
 class PreferencesHelper {
   static SharedPreferences? _prefs;
@@ -17,7 +19,7 @@ class PreferencesHelper {
     try {
       return _prefs?.getString(key);
     } catch (e) {
-      print('Error getting $key: $e');
+      debugPrint('Error getting $key: $e');
       return null;
     }
   }
@@ -28,7 +30,7 @@ class PreferencesHelper {
       await init(); // تأكد من التهيئة
       return await _prefs!.setString(key, value);
     } catch (e) {
-      print('Error setting $key: $e');
+      debugPrint('Error setting $key: $e');
       return false;
     }
   }

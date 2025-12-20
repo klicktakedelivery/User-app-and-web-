@@ -49,7 +49,7 @@ class CustomImage extends StatelessWidget {
     }
 
     // مسار نسبي
-    final base = AppConstants.baseUrl;
+    const base = AppConstants.baseUrl;
 
     // لو يبدأ بـ / خليه resolve مباشر
     if (v.startsWith('/')) {

@@ -40,7 +40,7 @@ class OrderInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ExpansionTileController controller = ExpansionTileController();
+    ExpansibleController controller = ExpansibleController();
     bool isDesktop = ResponsiveHelper.isDesktop(context);
     bool isGuestLoggedIn = AuthHelper.isGuestLoggedIn();
     return Stack(children: [
@@ -663,7 +663,7 @@ class OrderInfoWidget extends StatelessWidget {
   }
 }
 
-Widget offlineView(BuildContext context, OrderController orderController, ExpansionTileController controller, bool ongoing) {
+Widget offlineView(BuildContext context, OrderController orderController, ExpansibleController controller, bool ongoing) {
   return ListTileTheme(
     contentPadding: const EdgeInsets.all(0),
     dense: true,

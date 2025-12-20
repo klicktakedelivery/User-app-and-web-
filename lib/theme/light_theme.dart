@@ -63,19 +63,19 @@ ThemeData light({Color primaryColor = const Color(0xFF4CAF50) /*أخضر ناب�
   ),
   
   // نظام ألوان متناسق
-  colorScheme: ColorScheme.light(
-    primary: const Color(0xFF4CAF50),
-    primaryContainer: const Color(0xFFC8E6C9),
-    secondary: const Color(0xFFFDD835),
-    secondaryContainer: const Color(0xFFFFF9C4),
+  colorScheme: const ColorScheme.light(
+    primary: Color(0xFF4CAF50),
+    primaryContainer: Color(0xFFC8E6C9),
+    secondary: Color(0xFFFDD835),
+    secondaryContainer: Color(0xFFFFF9C4),
     surface: Colors.white,
-    surfaceContainerHighest: const Color(0xFFF5F5F5),
-    error: const Color(0xFFEF5350),
+    surfaceContainerHighest: Color(0xFFF5F5F5),
+    error: Color(0xFFEF5350),
     onPrimary: Colors.white,
-    onSecondary: const Color(0xFF212121),
-    onSurface: const Color(0xFF212121),
+    onSecondary: Color(0xFF212121),
+    onSurface: Color(0xFF212121),
     onError: Colors.white,
-    outline: const Color(0xFFE0E0E0),
+    outline: Color(0xFFE0E0E0),
   ),
   
   // شريط التطبيق العلوي

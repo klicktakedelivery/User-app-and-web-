@@ -3,6 +3,8 @@
 // ===============================================
 
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiCacheManager {
@@ -39,7 +41,7 @@ class ApiCacheManager {
         }),
       );
     } catch (e) {
-      print('Error caching data: $e');
+      debugPrint('Error caching data: $e');
     }
   }
   
@@ -49,7 +51,7 @@ class ApiCacheManager {
     if (_memoryCache.containsKey(key)) {
       final cached = _memoryCache[key]!;
       if (!cached.isExpired) {
-        print('✅ Cache HIT (Memory): $key');
+        debugPrint('✅ Cache HIT (Memory): $key');
         return cached.data;
       } else {
         _memoryCache.remove(key);
@@ -71,7 +73,7 @@ class ApiCacheManager {
         );
         
         if (!cached.isExpired) {
-          print('✅ Cache HIT (Storage): $key');
+          debugPrint('✅ Cache HIT (Storage): $key');
           _memoryCache[key] = cached; // حفظ في الذاكرة للمرات القادمة
           return cached.data;
         } else {
@@ -79,10 +81,10 @@ class ApiCacheManager {
         }
       }
     } catch (e) {
-      print('Error reading cache: $e');
+      debugPrint('Error reading cache: $e');
     }
     
-    print('❌ Cache MISS: $key');
+    debugPrint('❌ Cache MISS: $key');
     return null;
   }
   

@@ -23,13 +23,15 @@ dependencies:
   flutter_local_notifications: ^17.2.4
   path_provider: ^2.1.4
   url_strategy: ^0.3.0
-
+  http_parser: ^4.0.2
+  path: ^1.9.0
   geolocator: ^13.0.2
   google_maps_flutter: ^2.10.0
   google_maps_flutter_web: ^0.5.10
   custom_info_window: ^1.0.1
   flutter_animarker: ^3.2.0
   location: ^7.0.1
+  file_picker: ^10.3.8
 
   flutter_typeahead: ^4.6.0
   image_picker: ^1.1.2

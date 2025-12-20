@@ -52,10 +52,16 @@ class StoreService implements StoreServiceInterface {
     return await storeRepositoryInterface.getStoreDetails(storeID, fromCart, slug, languageCode, module, cacheModuleId, moduleId);
   }
 
-  @override
+   @override
   Future<ItemModel?> getStoreItemList(int? storeID, int offset, int? categoryID, String type) async {
-    return await storeRepositoryInterface.getStoreItemList(storeID, offset, categoryID, type);
+    return await storeRepositoryInterface.getStoreItemList(
+      storeID: storeID,
+      offset: offset,
+      categoryID: categoryID,
+      type: type,
+    );
   }
+
 
   @override
   Future<ItemModel?> getStoreSearchItemList(String searchText, String? storeID, int offset, String type, int? categoryID) async {

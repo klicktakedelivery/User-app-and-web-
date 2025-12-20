@@ -8,7 +8,7 @@ abstract class StoreRepositoryInterface extends RepositoryInterface {
     bool isFeaturedStoreList = false, bool isVisitAgainStoreList = false, bool isStoreRecommendedItemList = false, int? storeId,
     bool isStoreBannerList = false, bool isRecommendedStoreList = false, bool isTopOfferStoreList = false, DataSourceEnum? source});
   Future<dynamic> getStoreDetails(String storeID, bool fromCart, String slug, String languageCode, ModuleModel? module, int? cacheModuleId, int? moduleId);
-  Future<dynamic> getStoreItemList(int? storeID, int offset, int? categoryID, String type);
+  Future<dynamic> getStoreItemList({int? storeID, required int offset, int? categoryID, String? type, List<String>? filter, int? rating, double? lowerValue, double? upperValue});
   Future<dynamic> getStoreSearchItemList(String searchText, String? storeID, int offset, String type, int? categoryID);
   Future<dynamic> getCartStoreSuggestedItemList(int? storeId, String languageCode, ModuleModel? module, int? cacheModuleId, int? moduleId);
 }

@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
-import 'package:sixam_mart/util/dimensions.dart';
-import 'package:sixam_mart/util/styles.dart';
 
-void showCartSnackBar() {
-  ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
-    dismissDirection: DismissDirection.horizontal,
-    margin: EdgeInsets.only(
-      right: ResponsiveHelper.isDesktop(Get.context) ? Get.context!.width*0.7 : Dimensions.paddingSizeSmall,
-      top: Dimensions.paddingSizeSmall, bottom: Dimensions.paddingSizeSmall, left: Dimensions.paddingSizeSmall,
-    ),
-    duration: const Duration(seconds: 3),
-    backgroundColor: Colors.green,
-    behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
-    content: Text('item_added_to_cart'.tr, style: robotoMedium.copyWith(color: Colors.white)),
-    action: SnackBarAction(label: 'view_cart'.tr, onPressed: () => Get.toNamed(RouteHelper.getCartRoute()), textColor: Colors.white),
-  ));
+import 'cart_fly_to_cart_feedback.dart';
+
+/// Wrapper موحّد لأي "تمت الإضافة للسلة"
+/// حالياً نستعمل مفاتيح وهمية ليشتغل الـ Bottom Toast فوراً (Fallback)
+/// وبعدها رح نوصل مفاتيح حقيقية عشان يشتغل الـ Fly-to-cart.
+void showCartSnackBar({
+  double? addedAmount,
+  String currencySymbol = '\$',
+  ImageProvider? imageProvider,
+}) {
+  // مفاتيح وهمية -> داخل showCartFlyToCartFeedback رح يفشل استخراج الإحداثيات
+  // وبالتالي يعرض Bottom Toast الجميل تلقائياً.
+  final dummyFromKey = GlobalKey();
+  final dummyToKey = GlobalKey();
+
+  showCartFlyToCartFeedback(
+    fromKey: dummyFromKey,
+    toKey: dummyToKey,
+    imageProvider: imageProvider,
+    addedAmount: addedAmount,
+    currencySymbol: currencySymbol,
+    messageTrKey: 'item_added_to_cart',
+    onViewCart: () => Get.toNamed(RouteHelper.getCartRoute()),
+  );
 }

@@ -13,7 +13,7 @@ class WebDeliveryInstructionView extends StatefulWidget {
 }
 
 class _WebDeliveryInstructionViewState extends State<WebDeliveryInstructionView> {
-  ExpansionTileController controller = ExpansionTileController();
+  ExpansibleController controller = ExpansibleController();
 
   @override
   Widget build(BuildContext context) {

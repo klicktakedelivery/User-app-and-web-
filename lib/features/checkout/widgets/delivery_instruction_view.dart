@@ -13,7 +13,7 @@ class DeliveryInstructionView extends StatefulWidget {
 }
 
 class _DeliveryInstructionViewState extends State<DeliveryInstructionView> {
-  ExpansionTileController controller = ExpansionTileController();
+  ExpansibleController controller = ExpansibleController();
 
   @override
   Widget build(BuildContext context) {

@@ -246,6 +246,81 @@ class ApiService {
     return data;
   }
 
+  /// ✅ إرسال Zone Vote للسيرفر (يربط التطبيق باللوحة مباشرة)
+  Future<dynamic> submitZoneVote({
+    required double lat,
+    required double lng,
+    int? userId,
+    String? guestId,
+    String? deviceId,
+    String? fcmToken,
+    String? countryCode,
+    String? city,
+    String? district,
+    String? storeType,
+    List<String>? suggestedStores,
+    String? note,
+    bool notifyEnabled = true,
+    String? currencyCode,
+  }) async {
+    final sp = _spOrNull() ?? await SharedPreferences.getInstance();
+
+    // device_id ثابت لعمل dedup
+    const deviceKey = 'zone_vote_device_id_v1';
+    String did = (deviceId ?? sp.getString(deviceKey) ?? '').trim();
+    if (did.isEmpty) {
+      did = 'zv_${DateTime.now().millisecondsSinceEpoch}_${DateTime.now().microsecondsSinceEpoch % 1000000}';
+      await sp.setString(deviceKey, did);
+    }
+
+    final String curr =
+        (currencyCode?.trim().isNotEmpty == true) ? currencyCode!.trim().toUpperCase() : _currencyForCacheKey();
+
+    final payload = <String, dynamic>{
+      'user_id': userId,
+      'guest_id': (guestId != null && guestId.trim().isNotEmpty) ? guestId.trim() : null,
+      'device_id': did,
+      'fcm_token': (fcmToken != null && fcmToken.trim().isNotEmpty) ? fcmToken.trim() : null,
+
+      'country_code': (countryCode != null && countryCode.trim().isNotEmpty) ? countryCode.trim().toUpperCase() : null,
+      'city': (city != null && city.trim().isNotEmpty) ? city.trim() : null,
+      'district': (district != null && district.trim().isNotEmpty) ? district.trim() : null,
+
+      'latitude': lat,
+      'longitude': lng,
+
+      'store_type': (storeType != null && storeType.trim().isNotEmpty) ? storeType.trim() : null,
+      'suggested_stores': (suggestedStores != null && suggestedStores.isNotEmpty) ? suggestedStores : null,
+      'note': (note != null && note.trim().isNotEmpty) ? note.trim() : null,
+
+      'notify_enabled': notifyEnabled ? 1 : 0,
+      'currency_code': curr,
+    }..removeWhere((k, v) => v == null);
+
+    final headers = _buildHeaders(
+      latitude: lat,
+      longitude: lng,
+      currencyCode: curr,
+    );
+
+    // fallback headers للـ fcm_token (السيرفر يدعم X-FCM-Token / X-Firebase-Token)
+    if (payload['fcm_token'] != null) {
+      headers['X-FCM-Token'] = payload['fcm_token'] as String;
+      headers['X-Firebase-Token'] = payload['fcm_token'] as String;
+    }
+
+    final res = await http.post(
+      Uri.parse('$baseUrl/zone-votes'),
+      headers: headers,
+      body: jsonEncode(payload),
+    );
+
+    final decoded = (res.body.isNotEmpty) ? jsonDecode(res.body) : {};
+    if (res.statusCode == 200 || res.statusCode == 201) return decoded;
+
+    throw Exception('zone-votes failed: ${res.statusCode} ${res.body}');
+  }
+
   Future<List<dynamic>> getModules() async {
     const key = 'modules';
 
@@ -274,7 +349,6 @@ class ApiService {
     final currency = _currencyForCacheKey();
     final key = "stores_${moduleId}_${zoneId}_${featured}_$currency";
 
-
     final headers = _buildHeaders(
       moduleId: moduleId,
       zoneId: zoneId,
@@ -301,7 +375,6 @@ class ApiService {
   }) async {
     final currency = _currencyForCacheKey();
     final key = "categories_${moduleId}_${zoneId.join(',')}_$currency";
-
 
     final headers = _buildHeaders(
       moduleId: moduleId,

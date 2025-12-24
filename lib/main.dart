@@ -34,7 +34,10 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
 
 Future<void> _initFirebaseOnce() async {
   // Guard سريع من جهة Dart
-  if (Firebase.apps.isNotEmpty) return;
+  if (Firebase.apps.isNotEmpty) {
+    debugPrint('Firebase already initialized');
+    return;
+  }
 
   try {
     if (GetPlatform.isWeb) {
@@ -46,19 +49,25 @@ Future<void> _initFirebaseOnce() async {
           projectId: "klicktake-29b82",
           storageBucket: "klicktake-29b82.appspot.com",
           messagingSenderId: "457186597740",
-          appId: "1:457186597740:android:dfd425fa63d37b4598f149",
+          appId: "1:457186597740:web:dfd425fa63d37b4598f149",
         ),
       );
+      debugPrint('Firebase initialized for Web');
     } else {
-      // Android/iOS/Desktop: خليها default
-      // لأن Android غالبًا يهيّأ Firebase تلقائيًا من google-services.json
+      // Android/iOS/Desktop: default initialization
       await Firebase.initializeApp();
+      debugPrint('Firebase initialized for Mobile/Desktop');
     }
-  } catch (e) {
-    // حماية إضافية: لو كان Native مهيأ مسبقًا وDart شايفه فاضي
-    if (e.toString().contains('core/duplicate-app')) {
+  } on FirebaseException catch (e) {
+    // حماية إضافية: لو كان مهيأ مسبقًا
+    if (e.code == 'duplicate-app') {
+      debugPrint('Firebase duplicate app - already initialized');
       return;
     }
+    debugPrint('Firebase initialization error: ${e.code} - ${e.message}');
+    rethrow;
+  } catch (e) {
+    debugPrint('Unexpected Firebase error: $e');
     rethrow;
   }
 }
@@ -66,13 +75,17 @@ Future<void> _initFirebaseOnce() async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await _initFirebaseOnce();
+  try {
+    await _initFirebaseOnce();
+  } catch (e) {
+    debugPrint('Firebase init failed in main: $e');
+  }
 
   final Map<String, Map<String, String>> languages = await di.init();
 
   NotificationBodyModel? body;
   try {
-    if (GetPlatform.isMobile) {
+    if (GetPlatform.isMobile && Firebase.apps.isNotEmpty) {
       final RemoteMessage? remoteMessage =
           await FirebaseMessaging.instance.getInitialMessage();
       if (remoteMessage != null) {
@@ -82,15 +95,21 @@ Future<void> main() async {
       await NotificationHelper.initialize(flutterLocalNotificationsPlugin);
       FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
     }
-  } catch (_) {}
+  } catch (e) {
+    debugPrint('Notification initialization error: $e');
+  }
 
   if (ResponsiveHelper.isWeb()) {
-    await FacebookAuth.instance.webAndDesktopInitialize(
-      appId: "380903914182154",
-      cookie: true,
-      xfbml: true,
-      version: "v15.0",
-    );
+    try {
+      await FacebookAuth.instance.webAndDesktopInitialize(
+        appId: "380903914182154",
+        cookie: true,
+        xfbml: true,
+        version: "v15.0",
+      );
+    } catch (e) {
+      debugPrint('Facebook Auth initialization error: $e');
+    }
   }
 
   runApp(MyApp(languages: languages, body: body));

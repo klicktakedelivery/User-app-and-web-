@@ -57,6 +57,7 @@ import 'package:sixam_mart/features/html/screens/html_viewer_screen.dart';
 import 'package:sixam_mart/features/interest/screens/interest_screen.dart';
 import 'package:sixam_mart/features/language/screens/language_screen.dart';
 import 'package:sixam_mart/features/location/screens/access_location_screen.dart';
+import 'package:sixam_mart/features/location/screens/zone_vote_wizard_screen.dart';
 import 'package:sixam_mart/features/location/screens/pick_map_screen.dart';
 import 'package:sixam_mart/features/notification/screens/notification_screen.dart';
 import 'package:sixam_mart/features/onboard/screens/onboarding_screen.dart';
@@ -91,6 +92,8 @@ class RouteHelper {
   static const String signUp = '/sign-up';
   static const String verification = '/verification';
   static const String accessLocation = '/access-location';
+  static const String zoneVoteWizard = '/zone-vote-wizard';
+
   static const String pickMap = '/pick-map';
   static const String interest = '/interest';
   static const String main = '/main';
@@ -190,6 +193,9 @@ class RouteHelper {
   }
 
   static String getAccessLocationRoute(String page) => '$accessLocation?page=$page';
+  static String getZoneVoteWizardRoute({String? lat, String? lng}) =>
+    '$zoneVoteWizard?lat=${lat ?? ''}&lng=${lng ?? ''}';
+
   static String getPickMapRoute(String? page, bool canRoute) => '$pickMap?page=$page&route=${canRoute.toString()}';
   static String getInterestRoute() => interest;
   static String getMainRoute(String page) => '$main?page=$page';
@@ -314,6 +320,7 @@ class RouteHelper {
   static List<GetPage> routes = [
     GetPage(name: initial, page: () => getRoute(DashboardScreen(pageIndex: 0, fromSplash: Get.parameters['from-splash'] == 'true'))),
     GetPage(name: splash, page: () {
+      
       NotificationBodyModel? data;
       if(Get.parameters['data'] != 'null') {
         List<int> decode = base64Decode(Get.parameters['data']!.replaceAll(' ', '+'));
@@ -321,6 +328,9 @@ class RouteHelper {
       }
       return SplashScreen(body: data);
     }),
+    GetPage(name: zoneVoteWizard, page: () => getRoute(const ZoneVoteWizardScreen(), byPuss: true)),
+
+
     GetPage(name: language, page: () => ChooseLanguageScreen(fromMenu: Get.parameters['page'] == 'menu')),
     GetPage(name: onBoarding, page: () => const OnBoardingScreen()),
     GetPage(name: signIn, page: () => SignInScreen(

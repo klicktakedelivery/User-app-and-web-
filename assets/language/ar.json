@@ -1517,6 +1517,12 @@
   "currency": "العملة",
   "auto_currency_by_location": "تغيير العملة تلقائياً حسب الموقع",
   "auto_mode_enabled": "وضع تلقائي",
+   "activate_your_area_now": "فعّل منطقتك الآن",
+  "vote_suggest_notify": "صوّت… واقترح محلات… وسنخبرك عند توفرها",
+  "no_stores_in_your_area": "لا توجد متاجر متاحة في منطقتك حالياً",
+  "help_us_activate_area": "ساعدنا بتفعيل منطقتك أسرع عبر التصويت واقتراح المحلات",
+  "enable_notifications": "فعّل التنبيه",
+  "continue_without_notifications": "متابعة بدون تنبيه",
   "manual_mode_enabled": "وضع يدوي",
   "auto_currency_applied": "تم تطبيق العملة التلقائية حسب الموقع",
   "currency_changed": "تم تغيير العملة"

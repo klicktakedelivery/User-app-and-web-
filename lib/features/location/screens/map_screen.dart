@@ -50,6 +50,11 @@ class MapScreenState extends State<MapScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

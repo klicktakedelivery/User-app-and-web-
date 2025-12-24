@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.klicktake.app"
-    compileSdk 35
+    compileSdk 36
 
     compileOptions {
         coreLibraryDesugaringEnabled true

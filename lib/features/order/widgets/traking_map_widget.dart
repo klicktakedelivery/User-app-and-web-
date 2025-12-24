@@ -41,12 +41,11 @@ class _TrackingMapWidgetState extends State<TrackingMapWidget> {
     // _restaurantLatLng = LatLng(double.parse(coverage.latitude!), double.parse(coverage.longitude!));
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-
-    _controller?.dispose();
-  }
+ @override
+void dispose() {
+  _controller?.dispose();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {

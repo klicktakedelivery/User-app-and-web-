@@ -6,8 +6,10 @@ import 'package:sixam_mart/features/home/widgets/web/widgets/store_card_widget.d
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/common/widgets/no_data_screen.dart';
+import 'package:sixam_mart/common/widgets/zone_vote_empty_state.dart';
 import 'package:sixam_mart/common/widgets/item_shimmer.dart';
 import 'package:sixam_mart/common/widgets/item_widget.dart';
+import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,10 +25,21 @@ class ItemsView extends StatefulWidget {
   final bool inStorePage;
   final bool isFeatured;
   final bool? isFoodOrGrocery;
-  const ItemsView({super.key, required this.stores, required this.items, required this.isStore, this.isScrollable = false,
-    this.shimmerLength = 20, this.padding = const EdgeInsets.all(Dimensions.paddingSizeDefault), this.noDataText,
-    this.isCampaign = false, this.inStorePage = false, this.isFeatured = false,
-    this.isFoodOrGrocery = true});
+
+  const ItemsView({
+    super.key,
+    required this.stores,
+    required this.items,
+    required this.isStore,
+    this.isScrollable = false,
+    this.shimmerLength = 20,
+    this.padding = const EdgeInsets.all(Dimensions.paddingSizeDefault),
+    this.noDataText,
+    this.isCampaign = false,
+    this.inStorePage = false,
+    this.isFeatured = false,
+    this.isFoodOrGrocery = true,
+  });
 
   @override
   State<ItemsView> createState() => _ItemsViewState();
@@ -37,81 +50,122 @@ class _ItemsViewState extends State<ItemsView> {
   Widget build(BuildContext context) {
     bool isNull = true;
     int length = 0;
-    if(widget.isStore) {
+
+    if (widget.isStore) {
       isNull = widget.stores == null;
-      if(!isNull) {
+      if (!isNull) {
         length = widget.stores!.length;
       }
-    }else {
+    } else {
       isNull = widget.items == null;
-      if(!isNull) {
+      if (!isNull) {
         length = widget.items!.length;
       }
     }
 
-    return Column(children: [
+    final Widget content = !isNull
+        ? (length > 0
+            ? GridView.builder(
+                key: UniqueKey(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisSpacing: ResponsiveHelper.isDesktop(context)
+                      ? Dimensions.paddingSizeExtremeLarge
+                      : (widget.stores != null ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeLarge),
+                  mainAxisSpacing: ResponsiveHelper.isDesktop(context)
+                      ? Dimensions.paddingSizeExtremeLarge
+                      : ((widget.stores != null && widget.isStore) ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeSmall),
+                  mainAxisExtent: (ResponsiveHelper.isDesktop(context) && widget.isStore)
+                      ? 220
+                      : (ResponsiveHelper.isMobile(context)
+                          ? ((widget.stores != null && widget.isStore) ? 200 : 122)
+                          : 122),
+                  crossAxisCount: ResponsiveHelper.isMobile(context)
+                      ? 1
+                      : ((ResponsiveHelper.isDesktop(context) && widget.stores != null) ? 3 : 3),
+                ),
+                physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+                shrinkWrap: widget.isScrollable ? false : true,
+                itemCount: length,
+                padding: widget.padding,
+                itemBuilder: (context, index) {
+                  return (widget.stores != null && widget.isStore)
+                      ? (widget.isFoodOrGrocery! && widget.isStore
+                          ? StoreCardWidget(store: widget.stores![index])
+                          : StoreCardWithDistance(store: widget.stores![index]!, fromAllStore: true))
+                      : ItemWidget(
+                          isStore: widget.isStore,
+                          item: widget.isStore ? null : widget.items![index],
+                          isFeatured: widget.isFeatured,
+                          store: widget.isStore ? widget.stores![index] : null,
+                          index: index,
+                          length: length,
+                          isCampaign: widget.isCampaign,
+                          inStore: widget.inStorePage,
+                        );
+                },
+              )
+            : (widget.isStore
+                ? ZoneVoteEmptyState(
+                    title: widget.noDataText ??
+                        (Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
+                            ? 'no_restaurant_available'.tr
+                            : 'no_store_available'.tr),
+                    subtitle:
+                        'Tap below to vote for your area and tell us which restaurants/shops you want. We’ll use this to prioritize onboarding.',
+                    ctaText: 'Vote for your area',
+                   onTap: () {
+  Get.toNamed(RouteHelper.getAccessLocationRoute('home'));
+},
 
-      !isNull ? length > 0 ? GridView.builder(
-        key: UniqueKey(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisSpacing: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeExtremeLarge : widget.stores != null ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeLarge,
-          mainAxisSpacing: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeExtremeLarge : widget.stores != null && widget.isStore ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeSmall,
-          // childAspectRatio: ResponsiveHelper.isDesktop(context) && widget.isStore ? (1/0.6)
-          //     : ResponsiveHelper.isMobile(context) ? widget.stores != null && widget.isStore ? 2 : 3.8
-          //     : 3.3,
-          mainAxisExtent: ResponsiveHelper.isDesktop(context) && widget.isStore ? 220
-              : ResponsiveHelper.isMobile(context) ? widget.stores != null && widget.isStore ? 200 : 122
-              : 122,
-          crossAxisCount: ResponsiveHelper.isMobile(context) ? 1 : ResponsiveHelper.isDesktop(context) && widget.stores != null  ? 3 : 3,
-        ),
-        physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-        shrinkWrap: widget.isScrollable ? false : true,
-        itemCount: length,
-        padding: widget.padding,
-        itemBuilder: (context, index) {
-          return widget.stores != null && widget.isStore ?  widget.isFoodOrGrocery! && widget.isStore
-              ? StoreCardWidget(store: widget.stores![index])
-              : StoreCardWithDistance(store: widget.stores![index]!, fromAllStore: true)
-              : ItemWidget(
-            isStore: widget.isStore, item: widget.isStore ? null : widget.items![index], isFeatured: widget.isFeatured,
-            store: widget.isStore ? widget.stores![index] : null, index: index, length: length, isCampaign: widget.isCampaign,
-            inStore: widget.inStorePage,
+                    assetPath: 'assets/image/zone_vote.gif',
+                  )
+                : NoDataScreen(
+                    text: widget.noDataText ??
+                        (widget.isStore
+                            ? (Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
+                                ? 'no_restaurant_available'.tr
+                                : 'no_store_available'.tr)
+                            : 'no_item_available'.tr),
+                  )))
+        : GridView.builder(
+            key: UniqueKey(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisSpacing: ResponsiveHelper.isDesktop(context)
+                  ? Dimensions.paddingSizeExtremeLarge
+                  : (widget.stores != null ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeLarge),
+              mainAxisSpacing: ResponsiveHelper.isDesktop(context)
+                  ? Dimensions.paddingSizeLarge
+                  : (widget.stores != null ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeSmall),
+              mainAxisExtent: (ResponsiveHelper.isDesktop(context) && widget.isStore)
+                  ? 220
+                  : (ResponsiveHelper.isMobile(context)
+                      ? (widget.isStore ? 200 : 110)
+                      : 110),
+              crossAxisCount: ResponsiveHelper.isMobile(context) ? 1 : (ResponsiveHelper.isDesktop(context) ? 3 : 3),
+            ),
+            physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+            shrinkWrap: widget.isScrollable ? false : true,
+            itemCount: widget.shimmerLength,
+            padding: widget.padding,
+            itemBuilder: (context, index) {
+              return widget.isStore
+                  ? widget.isFoodOrGrocery!
+                      ? const StoreCardShimmer()
+                      : const NewOnShimmerView()
+                  : ItemShimmer(
+                      isEnabled: isNull,
+                      isStore: widget.isStore,
+                      hasDivider: index != widget.shimmerLength - 1,
+                    );
+            },
           );
-        },
-      ) : NoDataScreen(
-        text: widget.noDataText ?? (widget.isStore ? Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-            ? 'no_restaurant_available'.tr : 'no_store_available'.tr : 'no_item_available'.tr),
-      ) : GridView.builder(
-        key: UniqueKey(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisSpacing: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeExtremeLarge : widget.stores != null ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeLarge,
-          mainAxisSpacing: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeLarge : widget.stores != null ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeSmall,
-          // childAspectRatio: ResponsiveHelper.isDesktop(context) && widget.isStore ? (1/0.6)
-          //     : ResponsiveHelper.isMobile(context) ? widget.isStore ? 2 : 3.8
-          //     : 3,
-          mainAxisExtent: ResponsiveHelper.isDesktop(context) && widget.isStore ? 220
-              : ResponsiveHelper.isMobile(context) ? widget.isStore ? 200 : 110
-              : 110,
-          crossAxisCount: ResponsiveHelper.isMobile(context) ? 1 : ResponsiveHelper.isDesktop(context) ? 3 : 3,
-        ),
-        physics: widget.isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-        shrinkWrap: widget.isScrollable ? false : true,
-        itemCount: widget.shimmerLength,
-        padding: widget.padding,
-        itemBuilder: (context, index) {
-          return widget.isStore ? widget.isFoodOrGrocery!
-              ? const StoreCardShimmer()
-              : const NewOnShimmerView()
-              : ItemShimmer(isEnabled: isNull, isStore: widget.isStore, hasDivider: index != widget.shimmerLength-1);
-        },
-      ),
 
-    ]);
+    return Column(children: [content]);
   }
 }
 
 class NewOnShimmerView extends StatelessWidget {
-  const NewOnShimmerView({super.key, });
+  const NewOnShimmerView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +173,6 @@ class NewOnShimmerView extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: Stack(children: [
         Container(
-          // width: fromAllStore ?  MediaQuery.of(context).size.width : 260,
           decoration: BoxDecoration(
             color: Colors.grey[300],
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -128,15 +181,19 @@ class NewOnShimmerView extends StatelessWidget {
             Expanded(
               flex: 1,
               child: ClipRRect(
-                borderRadius: const BorderRadius.only(topLeft: Radius.circular(Dimensions.radiusDefault), topRight: Radius.circular(Dimensions.radiusDefault)),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(Dimensions.radiusDefault),
+                  topRight: Radius.circular(Dimensions.radiusDefault),
+                ),
                 child: Stack(clipBehavior: Clip.none, children: [
                   Container(
-                    height: double.infinity, width: double.infinity,
+                    height: double.infinity,
+                    width: double.infinity,
                     color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   ),
-
                   Positioned(
-                    top: 15, right: 15,
+                    top: 15,
+                    right: 15,
                     child: Container(
                       padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
@@ -149,7 +206,6 @@ class NewOnShimmerView extends StatelessWidget {
                 ]),
               ),
             ),
-
             Expanded(
               flex: 1,
               child: Column(children: [
@@ -160,18 +216,19 @@ class NewOnShimmerView extends StatelessWidget {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Expanded(
                         child: Container(
-                          height: 5, width: 100,
+                          height: 5,
+                          width: 100,
                           color: Theme.of(context).cardColor,
                         ),
                       ),
                       const SizedBox(height: 2),
-
                       Row(children: [
                         const Icon(Icons.location_on_outlined, color: Colors.blue, size: 15),
                         const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                         Expanded(
                           child: Container(
-                            height: 10, width: 100,
+                            height: 10,
+                            width: 100,
                             color: Theme.of(context).cardColor,
                           ),
                         ),
@@ -179,23 +236,23 @@ class NewOnShimmerView extends StatelessWidget {
                     ]),
                   ),
                 ),
-
                 Expanded(
                   flex: 3,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
                     child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Container(
-                        height: 10, width: 70,
+                        height: 10,
+                        width: 70,
                         padding: const EdgeInsets.symmetric(vertical: 3, horizontal: Dimensions.paddingSizeSmall),
                         decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
                         ),
                       ),
-
                       Container(
-                        height: 20, width: 65,
+                        height: 20,
+                        width: 65,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
@@ -208,14 +265,15 @@ class NewOnShimmerView extends StatelessWidget {
             ),
           ]),
         ),
-
         Positioned(
-          top: 60, left: 15,
+          top: 60,
+          left: 15,
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               Container(
-                height: 65, width: 65,
+                height: 65,
+                width: 65,
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
@@ -229,4 +287,3 @@ class NewOnShimmerView extends StatelessWidget {
     );
   }
 }
-

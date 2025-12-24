@@ -16,44 +16,56 @@ import 'package:sixam_mart/features/home/widgets/views/new_on_mart_view.dart';
 import 'package:sixam_mart/features/home/widgets/views/special_offer_view.dart';
 import 'package:sixam_mart/features/home/widgets/views/visit_again_view.dart';
 import 'package:sixam_mart/features/home/widgets/banner_view.dart';
+import 'package:sixam_mart/features/store/controllers/store_controller.dart';
 
 class FoodHomeScreen extends StatelessWidget {
   const FoodHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isLoggedIn = AuthHelper.isLoggedIn();
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    final bool isLoggedIn = AuthHelper.isLoggedIn();
 
-      Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: Get.find<ThemeController>().darkTheme ? null : const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(Images.foodModuleBannerBg),
-            fit: BoxFit.cover,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: Get.find<ThemeController>().darkTheme
+              ? null
+              : const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(Images.foodModuleBannerBg),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+          child: const Column(
+            children: [
+              BadWeatherWidget(),
+              BannerView(isFeatured: false),
+              SizedBox(height: 12),
+            ],
           ),
         ),
-        child: const Column(
-          children: [
-            BadWeatherWidget(),
 
-            BannerView(isFeatured: false),
-            SizedBox(height: 12),
-          ],
-        ),
-      ),
+        /// نخفي الكاتيجوري فقط إذا تبيّن فعلياً أنه ما في Stores (مش أثناء التحميل)
+        GetBuilder<StoreController>(builder: (storeController) {
+          final bool noStores =
+              storeController.storeModel != null && ((storeController.storeModel!.totalSize ?? 0) == 0);
 
-      const CategoryView(),
-      isLoggedIn ? const VisitAgainView(fromFood: true) : const SizedBox(),
-      const SpecialOfferView(isFood: true, isShop: false),
-      const HighlightWidget(),
-      const TopOffersNearMe(),
-      const BestReviewItemView(),
-      const BestStoreNearbyView(),
-      const ItemThatYouLoveView(forShop: false),
-      const MostPopularItemView(isFood: true, isShop: false),
-      const JustForYouView(),
-      const NewOnMartView(isNewStore: true, isPharmacy: false, isShop: false),
-    ]);
+          return noStores ? const SizedBox() : const CategoryView();
+        }),
+
+        isLoggedIn ? const VisitAgainView(fromFood: true) : const SizedBox(),
+        const SpecialOfferView(isFood: true, isShop: false),
+        const HighlightWidget(),
+        const TopOffersNearMe(),
+        const BestReviewItemView(),
+        const BestStoreNearbyView(),
+        const ItemThatYouLoveView(forShop: false),
+        const MostPopularItemView(isFood: true, isShop: false),
+        const JustForYouView(),
+        const NewOnMartView(isNewStore: true, isPharmacy: false, isShop: false),
+      ],
+    );
   }
 }

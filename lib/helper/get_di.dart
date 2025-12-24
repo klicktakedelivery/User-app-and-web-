@@ -41,6 +41,8 @@ import 'package:sixam_mart/features/chat/domain/repositories/chat_repository.dar
 import 'package:sixam_mart/features/chat/domain/repositories/chat_repository_interface.dart';
 import 'package:sixam_mart/features/chat/domain/services/chat_service.dart';
 import 'package:sixam_mart/features/chat/domain/services/chat_service_interface.dart';
+import 'package:sixam_mart/controllers/zone_controller.dart';
+
 import 'package:sixam_mart/features/coupon/controllers/coupon_controller.dart';
 import 'package:sixam_mart/features/coupon/domain/services/coupon_service.dart';
 import 'package:sixam_mart/features/coupon/domain/services/coupon_service_interface.dart';
@@ -460,6 +462,8 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => SplashController(splashServiceInterface: Get.find()));
   Get.lazyPut(() => AddressController(addressServiceInterface: Get.find()));
   Get.lazyPut(() => LocationController(locationServiceInterface: locationServiceInterface));
+  Get.lazyPut(() => ZoneController());
+
   Get.lazyPut(() => LocalizationController(languageServiceInterface: Get.find()));
   Get.lazyPut(() => OnBoardingController(onboardServiceInterface: Get.find()));
   Get.lazyPut(() => AuthController(authServiceInterface: Get.find()));

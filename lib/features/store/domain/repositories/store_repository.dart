@@ -108,7 +108,8 @@ class StoreRepository implements StoreRepositoryInterface {
     final int? moduleId = _currentModuleId();
     final Map<String, String> header = _buildHeader(moduleId: moduleId);
 
-    final String cacheId = '${AppConstants.storeUri}/$filterBy?store_type=$storeType&offset=$offset&limit=12-moduleId=${moduleId ?? 'null'}';
+    final String cacheId =
+        '${AppConstants.storeUri}/$filterBy?store_type=$storeType&offset=$offset&limit=12-moduleId=${moduleId ?? 'null'}';
 
     switch (source) {
       case DataSourceEnum.client:
@@ -213,7 +214,8 @@ class StoreRepository implements StoreRepositoryInterface {
                 ? 'type=non_veg'
                 : 'type=';
 
-    final String cacheId = '${AppConstants.topOfferStoreUri}?sort_by=$sortBy&$computedFilter-moduleId=${moduleId ?? 'null'}';
+    final String cacheId =
+        '${AppConstants.topOfferStoreUri}?sort_by=$sortBy&$computedFilter-moduleId=${moduleId ?? 'null'}';
 
     switch (source) {
       case DataSourceEnum.client:
@@ -244,7 +246,8 @@ class StoreRepository implements StoreRepositoryInterface {
     List<Store>? featuredStoreList;
 
     // في بعض الشاشات يكون module null (حسب نسخة المشروع)، فهنا نحافظ على سلوكك القديم
-    final bool useFeaturedHeader = (Get.find<SplashController>().module == null && Get.find<SplashController>().configModel!.module == null);
+    final bool useFeaturedHeader =
+        (Get.find<SplashController>().module == null && Get.find<SplashController>().configModel!.module == null);
 
     final int? moduleId = _currentModuleId();
     final Map<String, String> header = useFeaturedHeader ? HeaderHelper.featuredHeader() : _buildHeader(moduleId: moduleId);
@@ -307,7 +310,15 @@ class StoreRepository implements StoreRepositoryInterface {
   }
 
   @override
-  Future<Store?> getStoreDetails(String storeID, bool fromCart, String slug, String languageCode, ModuleModel? module, int? cacheModuleId, int? moduleId) async {
+  Future<Store?> getStoreDetails(
+    String storeID,
+    bool fromCart,
+    String slug,
+    String languageCode,
+    ModuleModel? module,
+    int? cacheModuleId,
+    int? moduleId,
+  ) async {
     Store? store;
     Map<String, String>? header;
 
@@ -393,7 +404,13 @@ class StoreRepository implements StoreRepositoryInterface {
   }
 
   @override
-  Future<CartSuggestItemModel?> getCartStoreSuggestedItemList(int? storeId, String languageCode, ModuleModel? module, int? cacheModuleId, int? moduleId) async {
+  Future<CartSuggestItemModel?> getCartStoreSuggestedItemList(
+    int? storeId,
+    String languageCode,
+    ModuleModel? module,
+    int? cacheModuleId,
+    int? moduleId,
+  ) async {
     CartSuggestItemModel? cartSuggestItemModel;
     AddressModel? addressModel = AddressHelper.getUserAddressFromSharedPref();
     Map<String, String> header = apiClient.updateHeader(

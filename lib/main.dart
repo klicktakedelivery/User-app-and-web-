@@ -1,12 +1,19 @@
 import 'dart:async';
 import 'dart:ui';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:sixam_mart/common/controllers/theme_controller.dart';
 import 'package:sixam_mart/features/auth/controllers/auth_controller.dart';
 import 'package:sixam_mart/features/cart/controllers/cart_controller.dart';
+import 'package:sixam_mart/features/home/widgets/cookies_view.dart';
 import 'package:sixam_mart/features/language/controllers/language_controller.dart';
-import 'package:sixam_mart/features/splash/controllers/splash_controller.dart';
-import 'package:sixam_mart/common/controllers/theme_controller.dart';
 import 'package:sixam_mart/features/notification/domain/models/notification_body_model.dart';
+import 'package:sixam_mart/features/splash/controllers/splash_controller.dart';
 import 'package:sixam_mart/helper/address_helper.dart';
 import 'package:sixam_mart/helper/auth_helper.dart';
 import 'package:sixam_mart/helper/notification_helper.dart';
@@ -16,77 +23,93 @@ import 'package:sixam_mart/theme/dark_theme.dart';
 import 'package:sixam_mart/theme/light_theme.dart';
 import 'package:sixam_mart/util/app_constants.dart';
 import 'package:sixam_mart/util/messages.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
-import 'package:sixam_mart/features/home/widgets/cookies_view.dart';
+
 import 'helper/get_di.dart' as di;
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
-// مفتاح ScaffoldMessenger خاص بنا (بديل عن Get.messengerKey)
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
+
+Future<void> _initFirebaseOnce() async {
+  // Guard سريع من جهة Dart
+  if (Firebase.apps.isNotEmpty) {
+    debugPrint('Firebase already initialized');
+    return;
+  }
+
+  try {
+    if (GetPlatform.isWeb) {
+      // Web فقط يحتاج options
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: "AIzaSyAIErOB4QEFl1nXmq1M-GICfctDYWRh93U",
+          authDomain: "klicktake-29b82.firebaseapp.com",
+          projectId: "klicktake-29b82",
+          storageBucket: "klicktake-29b82.appspot.com",
+          messagingSenderId: "457186597740",
+          appId: "1:457186597740:web:dfd425fa63d37b4598f149",
+        ),
+      );
+      debugPrint('Firebase initialized for Web');
+    } else {
+      // Android/iOS/Desktop: default initialization
+      await Firebase.initializeApp();
+      debugPrint('Firebase initialized for Mobile/Desktop');
+    }
+  } on FirebaseException catch (e) {
+    // حماية إضافية: لو كان مهيأ مسبقًا
+    if (e.code == 'duplicate-app') {
+      debugPrint('Firebase duplicate app - already initialized');
+      return;
+    }
+    debugPrint('Firebase initialization error: ${e.code} - ${e.message}');
+    rethrow;
+  } catch (e) {
+    debugPrint('Unexpected Firebase error: $e');
+    rethrow;
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /*///Pass all uncaught "fatal" errors from the framework to Crashlytics
-  FlutterError.onError = (errorDetails) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  };
-
-  ///Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };*/
-
-  if (GetPlatform.isWeb) {
-    await Firebase.initializeApp(options: const FirebaseOptions(
-      apiKey: "AIzaSyAIErOB4QEFl1nXmq1M-GICfctDYWRh93U",
-      authDomain: "klicktake-29b82.firebaseapp.com",
-      projectId: "klicktake-29b82",
-      storageBucket: "klicktake-29b82.appspot.com",
-      messagingSenderId: "457186597740",
-      appId: "1:457186597740:android:dfd425fa63d37b4598f149",
-    ));
-  } else if (GetPlatform.isAndroid) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyAIErOB4QEFl1nXmq1M-GICfctDYWRh93U",
-        appId: "1:457186597740:android:dfd425fa63d37b4598f149",
-        messagingSenderId: "457186597740",
-        projectId: "klicktake-29b82",
-      ),
-    );
-  } else {
-    await Firebase.initializeApp();
+  try {
+    await _initFirebaseOnce();
+  } catch (e) {
+    debugPrint('Firebase init failed in main: $e');
   }
 
-  Map<String, Map<String, String>> languages = await di.init();
+  final Map<String, Map<String, String>> languages = await di.init();
 
   NotificationBodyModel? body;
   try {
-    if (GetPlatform.isMobile) {
-      final RemoteMessage? remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (GetPlatform.isMobile && Firebase.apps.isNotEmpty) {
+      final RemoteMessage? remoteMessage =
+          await FirebaseMessaging.instance.getInitialMessage();
       if (remoteMessage != null) {
         body = NotificationHelper.convertNotification(remoteMessage.data);
       }
+
       await NotificationHelper.initialize(flutterLocalNotificationsPlugin);
       FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
     }
-  } catch (_) {}
+  } catch (e) {
+    debugPrint('Notification initialization error: $e');
+  }
 
   if (ResponsiveHelper.isWeb()) {
-    await FacebookAuth.instance.webAndDesktopInitialize(
-      appId: "380903914182154",
-      cookie: true,
-      xfbml: true,
-      version: "v15.0",
-    );
+    try {
+      await FacebookAuth.instance.webAndDesktopInitialize(
+        appId: "380903914182154",
+        cookie: true,
+        xfbml: true,
+        version: "v15.0",
+      );
+    } catch (e) {
+      debugPrint('Facebook Auth initialization error: $e');
+    }
   }
 
   runApp(MyApp(languages: languages, body: body));
@@ -111,8 +134,9 @@ class _MyAppState extends State<MyApp> {
   void _route() async {
     if (GetPlatform.isWeb) {
       Get.find<SplashController>().initSharedData();
-      if (AddressHelper.getUserAddressFromSharedPref() != null
-          && AddressHelper.getUserAddressFromSharedPref()!.zoneIds == null) {
+
+      if (AddressHelper.getUserAddressFromSharedPref() != null &&
+          AddressHelper.getUserAddressFromSharedPref()!.zoneIds == null) {
         Get.find<AuthController>().clearSharedAddress();
       }
 
@@ -120,13 +144,14 @@ class _MyAppState extends State<MyApp> {
         await Get.find<AuthController>().guestLogin();
       }
 
-      if ((AuthHelper.isLoggedIn() || AuthHelper.isGuestLoggedIn())
-          && Get.find<SplashController>().cacheModule != null) {
+      if ((AuthHelper.isLoggedIn() || AuthHelper.isGuestLoggedIn()) &&
+          Get.find<SplashController>().cacheModule != null) {
         Get.find<CartController>().getCartDataOnline();
       }
 
       Get.find<SplashController>().getConfigData(
-        loadLandingData: (GetPlatform.isWeb && AddressHelper.getUserAddressFromSharedPref() == null),
+        loadLandingData:
+            (GetPlatform.isWeb && AddressHelper.getUserAddressFromSharedPref() == null),
         fromMainFunction: true,
       );
     }
@@ -142,9 +167,9 @@ class _MyAppState extends State<MyApp> {
               : GetMaterialApp(
                   title: AppConstants.appName,
                   debugShowCheckedModeBanner: false,
-            showPerformanceOverlay: false,
-            navigatorKey: Get.key,
-                  scaffoldMessengerKey: rootScaffoldMessengerKey, // استخدم المفتاح الخاص بنا
+                  showPerformanceOverlay: false,
+                  navigatorKey: Get.key,
+                  scaffoldMessengerKey: rootScaffoldMessengerKey,
                   scrollBehavior: const MaterialScrollBehavior().copyWith(
                     dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
                   ),
@@ -173,22 +198,25 @@ class _MyAppState extends State<MyApp> {
                           child: Stack(
                             children: [
                               widget!,
-                              GetBuilder<SplashController>(builder: (splashController) {
-                                if (!splashController.savedCookiesData &&
-                                    !splashController.getAcceptCookiesStatus(
+                              GetBuilder<SplashController>(
+                                builder: (splashController) {
+                                  if (!splashController.savedCookiesData &&
+                                      !splashController.getAcceptCookiesStatus(
                                         splashController.configModel != null
                                             ? splashController.configModel!.cookiesText!
-                                            : '')) {
-                                  return ResponsiveHelper.isWeb()
-                                      ? const Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: CookiesView(),
-                                        )
-                                      : const SizedBox();
-                                } else {
-                                  return const SizedBox();
-                                }
-                              })
+                                            : '',
+                                      )) {
+                                    return ResponsiveHelper.isWeb()
+                                        ? const Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: CookiesView(),
+                                          )
+                                        : const SizedBox();
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                },
+                              ),
                             ],
                           ),
                         ),

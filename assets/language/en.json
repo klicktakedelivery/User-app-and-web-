@@ -23,6 +23,15 @@
   "last_name": "Last name",
   "phone": "Phone",
   "enter_your_first_name": "Enter your first name",
+  
+  "activate_your_area_now": "Activate your area now",
+  "vote_suggest_notify": "Vote… suggest stores… and we’ll notify you when they’re available",
+  "no_stores_in_your_area": "No stores are available in your area yet",
+  "help_us_activate_area": "Help us activate your area faster by voting and suggesting stores",
+  "enable_notifications": "Enable notifications",
+  "continue_without_notifications": "Continue without notifications",
+
+
   "enter_your_last_name": "Enter your last name",
   "enter_email_address": "Enter your email address",
   "enter_a_valid_email_address": "Enter a valid email address",
@@ -314,13 +323,13 @@
   "your_app_is_deprecated": "The app you using is deprecated. A newer version of this app is available. Please update your app.",
   "can_not_launch": "Can't launch",
   "by_login_i_agree_with_all_the": "By login I Agree with all the",
-  "service_not_available_in_this_area": "Service not available in this area",
+  "service_not_available_in_this_area": "Service not available in this area vote for it",
   "you_have_to_allow": "You have to allow location permission to use your location",
   "you_denied_location_permission": "You denied location permission forever. Please allow location permission from your app settings and receive more accurate delivery.",
   "view_cart": "View Cart",
   "close": "Close",
   "settings": "Settings",
-  "service_not_available_in_current_location": "Service not available in your current location",
+  "service_not_available_in_current_location": "Service not available location vote for it",
   "currently_opened_restaurants": "Currently Opened Restaurants",
   "currently_opened_stores": "Currently Opened Stores",
   "discounted_restaurants": "Discounted Restaurants",
@@ -1520,5 +1529,13 @@
   "sort_by_z_to_a" : "Sort by: Z to A",
   "only_halal" : "Only Halal",
   "only_veg" : "Only Veg",
-  "only_non_veg" : "Only Non-veg"
+  "only_non_veg" : "Only Non-veg",
+  "currency": "Currency",
+  "auto_currency_by_location": "Auto currency by location",
+  "auto_mode_enabled": "Auto mode",
+  "manual_mode_enabled": "Manual mode",
+  "auto_currency_applied": "Auto currency applied",
+  "currency_changed": "Currency changed"
+  
+  
 }

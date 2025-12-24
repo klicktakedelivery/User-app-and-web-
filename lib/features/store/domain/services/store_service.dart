@@ -54,7 +54,12 @@ class StoreService implements StoreServiceInterface {
 
   @override
   Future<ItemModel?> getStoreItemList(int? storeID, int offset, int? categoryID, String type) async {
-    return await storeRepositoryInterface.getStoreItemList(storeID, offset, categoryID, type);
+    return await storeRepositoryInterface.getStoreItemList(
+      storeID: storeID,
+      offset: offset,
+      categoryID: categoryID,
+      type: type,
+    );
   }
 
   @override
@@ -98,20 +103,19 @@ class StoreService implements StoreServiceInterface {
     List<String> routes = Get.currentRoute.split('?');
     String replace = '';
 
-    if(AppConstants.useReactWebsite) {
+    if (AppConstants.useReactWebsite) {
       if (slug.isNotEmpty) {
         replace = '${routes[0]}/$slug?module_id=${store.moduleId}&module_type=${Get.find<SplashController>().module!.moduleType}&store_zone_id=${store.zoneId}&distance=${store.distance}';
       } else {
         replace = '${routes[0]}/${store.id}?module_id=${store.moduleId}&module_type=${Get.find<SplashController>().module!.moduleType}&store_zone_id=${store.zoneId}&distance=${store.distance}';
       }
     } else {
-      if(slug.isNotEmpty){
+      if (slug.isNotEmpty) {
         replace = '${routes[0]}?slug=$slug';
-      }else {
+      } else {
         replace = '${routes[0]}?slug=${store.id}';
       }
     }
     return replace;
   }
-
 }
